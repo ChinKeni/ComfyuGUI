@@ -8,7 +8,7 @@ namespace ComfyuGUIEditor.Widgets
     {
         public static void Draw()
         {
-            GUILayout.BeginHorizontal(EditorStyles.toolbar,GUILayout.ExpandWidth(false));
+            GUILayout.BeginHorizontal(EditorStyles.toolbar,GUILayout.ExpandWidth(false),GUILayout.Height(ComfyuGUIVars.MenuBarSize));
             // 工具名称
             // GUILayout.Label(ComfyuGUIVars.Name, EditorStyles.boldLabel);
             if (GUILayout.Button(" 菜单 ", EditorStyles.toolbarButton))
