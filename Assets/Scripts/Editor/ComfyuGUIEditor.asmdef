@@ -1,0 +1,20 @@
+{
+    "name": "ComfyuGUIEditor",
+    "rootNamespace": "",
+    "references": [
+        "ComfyuGUI",
+        "XNodeEditor",
+        "XNode"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
