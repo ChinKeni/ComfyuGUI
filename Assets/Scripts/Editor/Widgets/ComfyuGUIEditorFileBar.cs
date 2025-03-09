@@ -16,7 +16,8 @@ namespace ComfyuGUIEditor.Widgets
 
             foreach (var entry  in data.ToList())
             {
-                if (ComfyuGUIEditorFileTab.DoTab(entry, () => data.Remove(entry)))
+                var isOpen = ComfyuGUIEditorWindow.currentComfyuGUIGraph == entry;
+                if (ComfyuGUIEditorFileTab.DoTab(entry, () => data.Remove(entry),isOpen))
                 {
                     ComfyuGUIEditorWindow.SwitchComfyuGUIGraph(entry);
                 };

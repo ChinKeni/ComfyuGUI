@@ -49,6 +49,7 @@ namespace ComfyuGUIEditor
         {
             var newGraph = ScriptableObject.CreateInstance<ComfyuGUIGraph>();
             newGraph.graphName = newName;
+            newGraph.isDirty = true;
             return newGraph;
         }
 
@@ -60,7 +61,7 @@ namespace ComfyuGUIEditor
             // 遍历所有图表对象，提取名称进行匹配
             foreach (var graph in openList)
             {
-                var match = Regex.Match(graph.graphName, pattern);
+                var match = Regex.Match(graph.relName, pattern);
                 if (!match.Success) continue;
         
                 string numberStr = match.Groups[1].Value;
