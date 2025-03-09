@@ -12,8 +12,8 @@
 
 ## 软件和插件支持
 
-Unity版本：2021.3.37f1
-xNode版本：1.8.0  [->GitHUB地址](https://github.com/Siccity/xNode.git)
+#### Unity版本：2021.3.37f1
+#### xNode版本：1.8.0  [->GitHUB地址](https://github.com/Siccity/xNode.git)
 
 ---
 
