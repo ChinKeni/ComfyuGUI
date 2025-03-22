@@ -23,8 +23,9 @@ namespace ComfyuGUIEditor.Nodes.Prefab
             return prefabAsset;
         }
 
-        private void OnValidate()
+        private new void OnValidate()
         {
+            base.OnValidate();
             if(prefabAsset==null||PrefabUtility.IsPartOfPrefabAsset(prefabAsset))return;
             prefabAsset = null;
         }

@@ -24,7 +24,9 @@ namespace ComfyuGUIEditor.Nodes.Prefab
             var newPrefab = GetPort("prefab").GetInputValue<GameObject>();
             if (newPrefab == null)
             {
+                selectedTargets?.Clear();
                 selectedTargets = null;
+                _currentPrefab = null;
                 return;
             }
             if(currentPrefab==newPrefab)return;
@@ -63,7 +65,7 @@ namespace ComfyuGUIEditor.Nodes.Prefab
             if(targetNode != null && targetNode.currentPrefab==null)return;
             GUILayout.BeginVertical();
             //改成TreeView解析做法
-            NodeEditorGUILayout.InstancePortList("selectedTargets", typeof(int), serializedObject, NodePort.IO.Output);
+            NodeEditorGUILayout.DynamicPortList("selectedTargets", typeof(int), serializedObject, NodePort.IO.Output);
             //制作一个TreeView
             GUILayout.EndVertical();
         }
