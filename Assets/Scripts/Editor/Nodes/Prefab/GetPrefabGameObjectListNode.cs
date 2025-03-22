@@ -15,7 +15,8 @@ namespace ComfyuGUIEditor.Nodes.Prefab
     public class GetPrefabGameObjectListNode: ComfyuGUIBaseNode
     {
         [Input] public GameObject prefab;
-        [HideInInspector] public List<GameObject> selectedTargets;
+        [HideInInspector] public List<GameObjectDepthDate> selectedTargets;
+        // [HideInInspector] public List<GameObject> outputTargets;
         private GameObject _currentPrefab;
         public GameObject currentPrefab => _currentPrefab;
 
@@ -27,16 +28,18 @@ namespace ComfyuGUIEditor.Nodes.Prefab
                 selectedTargets?.Clear();
                 selectedTargets = null;
                 _currentPrefab = null;
+                ClearDynamicPorts();
                 return;
             }
             if(currentPrefab==newPrefab)return;
             _currentPrefab = newPrefab;
-            selectedTargets = ComfyuGUIPrefabUtility.GetAllChildren(newPrefab);
+            // selectedTargets = ComfyuGUIPrefabUtility.GetAllChildren(newPrefab); //修改成展开方法
+            selectedTargets= new List<GameObjectDepthDate> { new(newPrefab,0) };
         }
 
 
-        public override object GetValue(NodePort port) {
-            
+        public override object GetValue(NodePort port)
+        {
             if (port.fieldName.StartsWith("selectedTargets ")) {
                 int index = int.Parse(port.fieldName.Split(' ')[1]);
                 return selectedTargets[index];
@@ -49,8 +52,21 @@ namespace ComfyuGUIEditor.Nodes.Prefab
             name = "获取Prefab对象列表";
         }
     }
-    
-    
+    # region NodeData
+    public class GameObjectDepthDate
+    {
+        public GameObject GameObject;
+        public int Depth;
+
+        public GameObjectDepthDate(GameObject go, int depth)
+        {
+            GameObject = go;
+            Depth = depth;
+        }
+    }
+    #endregion NodeData
+
+
     # region NodeEditor
 
     [CustomNodeEditor(typeof(GetPrefabGameObjectListNode))]
@@ -62,12 +78,9 @@ namespace ComfyuGUIEditor.Nodes.Prefab
         {
             base.OnBodyGUI();
             if(targetNode == null)targetNode = target as GetPrefabGameObjectListNode;
-            if(targetNode != null && targetNode.currentPrefab==null)return;
-            GUILayout.BeginVertical();
-            //改成TreeView解析做法
-            NodeEditorGUILayout.DynamicPortList("selectedTargets", typeof(int), serializedObject, NodePort.IO.Output);
-            //制作一个TreeView
-            GUILayout.EndVertical();
+            if(targetNode == null || targetNode.currentPrefab==null)return;
+            GameObjectTreeView.Draw(targetNode,targetNode.selectedTargets);
+            // NodeEditorGUILayout.DynamicPortList("outputTargets", typeof(GameObject), serializedObject, NodePort.IO.Output);
         }
     }
     
