@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using ComfyuGUIEditor.Nodes.Prefab;
+using ComfyuGUIEditor.Nodes;
 using UnityEngine;
 
 namespace ComfyuGUIEditor.Internal.Utility

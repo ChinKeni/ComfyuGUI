@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ComfyuGUIEditor.Internal.Utility;
-using ComfyuGUIEditor.Nodes.Prefab;
+using ComfyuGUIEditor.Nodes;
 using UnityEditor;
 using UnityEngine;
 using XNodeEditor;

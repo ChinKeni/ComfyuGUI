@@ -7,7 +7,7 @@ using UnityEngine;
 using XNode;
 using XNodeEditor;
 
-namespace ComfyuGUIEditor.Nodes.Prefab
+namespace ComfyuGUIEditor.Nodes
 {
     [CreateNodeMenu("核心/Prefab/获取Prefab对象列表")]
     [NodeTint("#335955")]

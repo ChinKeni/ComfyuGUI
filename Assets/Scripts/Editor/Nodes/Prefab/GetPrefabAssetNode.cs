@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using XNode;
 
-namespace ComfyuGUIEditor.Nodes.Prefab
+namespace ComfyuGUIEditor.Nodes
 {
     [CreateNodeMenu("核心/Prefab/获取Prefab资产")]
     [NodeTint("#594d33")]
