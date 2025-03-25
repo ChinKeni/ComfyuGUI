@@ -3,9 +3,7 @@ using System.Linq;
 using ComfyuGUIEditor.Internal.Utility;
 using ComfyuGUIEditor.Nodes.Prefab;
 using UnityEditor;
-using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-using XNode;
 using XNodeEditor;
 
 namespace ComfyuGUIEditor.Widgets.Nodes
@@ -33,15 +31,32 @@ namespace ComfyuGUIEditor.Widgets.Nodes
                     ComfyuGUIGameObjectUtility.Open(data,depthDate);
                 else
                     ComfyuGUIGameObjectUtility.Close(data,depthDate);
-                // GetAllGameObject(targetNode,data);
+                UpdatePortData(targetNode,data);
             }
             EditorGUILayout.EndVertical();
         }
 
-        // private static void GetAllGameObject(GetPrefabGameObjectListNode targetNode, List<GameObjectDepthDate> data)
-        // {
-        //     targetNode.outputTargets =  (from cell in data where cell.GameObject != null select cell.GameObject).ToList();
-        // }
+        public static void InitData(GetPrefabGameObjectListNode targetNode, List<GameObjectDepthDate> data)
+        {
+            targetNode.outputTargets = new List<GameObject>();
+            UpdatePortData(targetNode,data);
+        }
+
+        private static void UpdatePortData(GetPrefabGameObjectListNode targetNode, List<GameObjectDepthDate> data)
+        {
+            targetNode.ClearCustomPorts();
+
+            targetNode.outputTargets.Clear();
+            foreach (var cell in data)
+            {
+                targetNode.outputTargets.Add(cell.GameObject);
+            }
+
+            for (var i = 0; i < targetNode.outputTargets.Count; i++)
+            {
+                targetNode.AddCustomOutput(typeof(GameObject), fieldName:"outputTargets " + i);
+            }
+        }
 
 
         private static bool HierarchyItem(GetPrefabGameObjectListNode targetNode, GameObject go, int depth,
@@ -62,7 +77,8 @@ namespace ComfyuGUIEditor.Widgets.Nodes
 
             var rect = GUILayoutUtility.GetLastRect();
             var pos = new Vector2(480, rect.y);
-            NodeEditorGUILayout.PortField(pos,new NodePort("selectedTargets "+i,typeof(GameObject),NodePort.IO.Output,Node.ConnectionType.Multiple,Node.TypeConstraint.InheritedInverse,targetNode));
+            var port = targetNode.GetPort("outputTargets " + i);
+            NodeEditorGUILayout.PortField(pos,port);
             EditorGUILayout.EndHorizontal();
             return tmpSwitch != enabled;
         }

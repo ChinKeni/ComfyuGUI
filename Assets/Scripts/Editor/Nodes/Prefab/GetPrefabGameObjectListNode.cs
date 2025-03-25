@@ -15,8 +15,8 @@ namespace ComfyuGUIEditor.Nodes.Prefab
     public class GetPrefabGameObjectListNode: ComfyuGUIBaseNode
     {
         [Input] public GameObject prefab;
-        [HideInInspector] public List<GameObjectDepthDate> selectedTargets;
-        // [HideInInspector] public List<GameObject> outputTargets;
+        [HideInInspector]public List<GameObjectDepthDate> selectedTargets;
+        [HideInInspector]public List<GameObject> outputTargets;
         private GameObject _currentPrefab;
         public GameObject currentPrefab => _currentPrefab;
 
@@ -40,9 +40,9 @@ namespace ComfyuGUIEditor.Nodes.Prefab
 
         public override object GetValue(NodePort port)
         {
-            if (port.fieldName.StartsWith("selectedTargets ")) {
+            if (port.fieldName.StartsWith("outputTargets ")) {
                 int index = int.Parse(port.fieldName.Split(' ')[1]);
-                return selectedTargets[index];
+                return outputTargets[index];
             }
             return null;
         }
@@ -57,7 +57,7 @@ namespace ComfyuGUIEditor.Nodes.Prefab
     {
         public GameObject GameObject;
         public int Depth;
-
+        
         public GameObjectDepthDate(GameObject go, int depth)
         {
             GameObject = go;
@@ -73,14 +73,18 @@ namespace ComfyuGUIEditor.Nodes.Prefab
     public class GetPrefabGameObjectListNodeEditor : NodeEditor
     {
         private GetPrefabGameObjectListNode targetNode;
-        
+        private GameObject lastPrefab;
         public override void OnBodyGUI()
         {
             base.OnBodyGUI();
             if(targetNode == null)targetNode = target as GetPrefabGameObjectListNode;
             if(targetNode == null || targetNode.currentPrefab==null)return;
+            if (lastPrefab != targetNode.currentPrefab)
+            {
+                lastPrefab= targetNode.currentPrefab;
+                GameObjectTreeView.InitData(targetNode,targetNode.selectedTargets);
+            }
             GameObjectTreeView.Draw(targetNode,targetNode.selectedTargets);
-            // NodeEditorGUILayout.DynamicPortList("outputTargets", typeof(GameObject), serializedObject, NodePort.IO.Output);
         }
     }
     

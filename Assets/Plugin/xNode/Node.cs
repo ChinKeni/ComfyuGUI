@@ -136,6 +136,62 @@ namespace XNode {
             foreach (NodePort port in Ports) port.VerifyConnections();
         }
 
+#region ComfyuGUI CustomPort
+        
+        public IEnumerable<NodePort> CustomPorts { get { foreach (NodePort port in Ports) { if (port.IsCustom) yield return port; } } }
+        /// <summary> 自定义输出节点 </summary>
+        public IEnumerable<NodePort> CustomOutputs { get { foreach (NodePort port in Ports) { if (port.IsCustom && port.IsOutput) yield return port; } } }
+        /// <summary> 自定义输入节点 </summary>
+        public IEnumerable<NodePort> CustomInputs { get { foreach (NodePort port in Ports) { if (port.IsCustom && port.IsInput) yield return port; } } }
+        
+        public NodePort AddCustomInput(Type type, Node.ConnectionType connectionType = Node.ConnectionType.Multiple, Node.TypeConstraint typeConstraint = TypeConstraint.None, string fieldName = null) {
+            return AddCustomPort(type, NodePort.IO.Input, connectionType, typeConstraint, fieldName);
+        }
+        
+        public NodePort AddCustomOutput(Type type, Node.ConnectionType connectionType = Node.ConnectionType.Multiple, Node.TypeConstraint typeConstraint = TypeConstraint.None, string fieldName = null) {
+            return AddCustomPort(type, NodePort.IO.Output, connectionType, typeConstraint, fieldName);
+        }
+        
+        private NodePort AddCustomPort(Type type, NodePort.IO direction, Node.ConnectionType connectionType = Node.ConnectionType.Multiple, Node.TypeConstraint typeConstraint = TypeConstraint.None, string fieldName = null) {
+            if (fieldName == null) {
+                fieldName = "customInput_0";
+                int i = 0;
+                while (HasPort(fieldName)) fieldName = "customInput_" + (++i);
+            } else if (HasPort(fieldName)) {
+                Debug.LogWarning("Port '" + fieldName + "' already exists in " + name, this);
+                return ports[fieldName];
+            }
+            NodePort port = new NodePort(fieldName, type, direction, connectionType, typeConstraint, this,false);
+            ports.Add(fieldName, port);
+            return port;
+        }
+        
+        /// <summary> 移除一个自定义端口 </summary>
+        public void RemoveCustomPort(string fieldName) {
+            NodePort customPort = GetPort(fieldName);
+            if (customPort == null) throw new ArgumentException("端口 " + fieldName + " 不存在");
+            RemoveDynamicPort(GetPort(fieldName));
+        }
+
+        /// <summary> 从node移除一个自定义端口 </summary>
+        public void RemoveCustomPort(NodePort port) {
+            if (port == null) throw new ArgumentNullException("port");
+            else if (!port.IsCustom) throw new ArgumentException("不能移除非自定义端口");
+            port.ClearConnections();
+            ports.Remove(port.fieldName);
+        }
+
+        /// <summary> 从node移除所有自定义端口 </summary>
+        [ContextMenu("Clear Custom Ports")]
+        public void ClearCustomPorts() {
+            List<NodePort> customPorts = new List<NodePort>(CustomOutputs);
+            foreach (NodePort port in customPorts) {
+                RemoveCustomPort(port);
+            }
+        }
+
+#endregion ComfyuGUI CustomPort
+        
 #region Dynamic Ports
         /// <summary> Convenience function. </summary>
         /// <seealso cref="AddInstancePort"/>

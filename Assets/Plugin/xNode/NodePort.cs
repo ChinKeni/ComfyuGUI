@@ -41,6 +41,7 @@ namespace XNode {
         public Node node { get { return _node; } }
         public bool IsDynamic { get { return _dynamic; } }
         public bool IsStatic { get { return !_dynamic; } }
+        
         public Type ValueType {
             get {
                 if (valueType == null && !string.IsNullOrEmpty(_typeQualifiedName)) valueType = Type.GetType(_typeQualifiedName, false);
@@ -61,6 +62,25 @@ namespace XNode {
         [SerializeField] private Node.ConnectionType _connectionType;
         [SerializeField] private Node.TypeConstraint _typeConstraint;
         [SerializeField] private bool _dynamic;
+
+        #region ComfyuGUI CustomPort
+        public bool IsCustom { get { return _custom; } }
+        [SerializeField] private bool _custom;
+        public NodePort(string fieldName, Type type, IO direction, Node.ConnectionType connectionType, Node.TypeConstraint typeConstraint, Node node,bool dynamic) {
+            _fieldName = fieldName;
+            this.ValueType = type;
+            _direction = direction;
+            _node = node;
+            _dynamic = dynamic;
+            //核心自定义属性
+            _custom = true;
+            _connectionType = connectionType;
+            _typeConstraint = typeConstraint;
+        }
+        #endregion
+        
+        
+       
 
         /// <summary> Construct a static targetless nodeport. Used as a template. </summary>
         public NodePort(FieldInfo fieldInfo) {
@@ -91,7 +111,9 @@ namespace XNode {
             _typeConstraint = nodePort._typeConstraint;
             _node = node;
         }
-
+        
+        
+        
         /// <summary> Construct a dynamic port. Dynamic ports are not forgotten on reimport, and is ideal for runtime-created ports. </summary>
         public NodePort(string fieldName, Type type, IO direction, Node.ConnectionType connectionType, Node.TypeConstraint typeConstraint, Node node) {
             _fieldName = fieldName;
