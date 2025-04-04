@@ -14,6 +14,7 @@ namespace ComfyuGUIEditor.Widgets
             if (GUILayout.Button(" 菜单 ", EditorStyles.toolbarButton))
             {
                 var menu = new GenericMenu();
+                menu.AddItem(new GUIContent("新建"), false, () => ComfyuGUIEditorWindow.OpenNewComfyuGUIGraph());
                 menu.AddItem(new GUIContent("打开"), false, () => Debug.Log(""));
                 menu.AddItem(new GUIContent("保存"), false, () => Debug.Log(""));
                 menu.ShowAsContext();
@@ -23,6 +24,12 @@ namespace ComfyuGUIEditor.Widgets
                 var menu = new GenericMenu();
                 menu.AddItem(new GUIContent("节点/创建"), false, () => Debug.Log(""));
                 menu.AddItem(new GUIContent("节点/删除"), false, () => Debug.Log(""));
+                menu.ShowAsContext();
+            };
+            if (GUILayout.Button(" 运行 ", EditorStyles.toolbarButton))
+            {
+                var menu = new GenericMenu();
+                menu.AddItem(new GUIContent("运行当前工作流"), false, () => Debug.Log(""));
                 menu.ShowAsContext();
             };
             if (GUILayout.Button(" 帮助 ", EditorStyles.toolbarButton))

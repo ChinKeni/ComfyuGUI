@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace XNode {
@@ -152,18 +153,54 @@ namespace XNode {
             return AddCustomPort(type, NodePort.IO.Output, connectionType, typeConstraint, fieldName);
         }
         
+        /// <summary> 自定义输入节点直接+1 ,但是连线数据不保真</summary>
+        public NodePort AppendCustomOutput(Type type, Node.ConnectionType connectionType = Node.ConnectionType.Multiple, Node.TypeConstraint typeConstraint = TypeConstraint.None, string fieldName = null)
+        {
+            var count = CustomPorts.Count();
+            return AddCustomPort(type, NodePort.IO.Output, connectionType, typeConstraint, fieldName + count);
+        }
+        
         private NodePort AddCustomPort(Type type, NodePort.IO direction, Node.ConnectionType connectionType = Node.ConnectionType.Multiple, Node.TypeConstraint typeConstraint = TypeConstraint.None, string fieldName = null) {
             if (fieldName == null) {
                 fieldName = "customInput_0";
-                int i = 0;
+                var i = 0;
                 while (HasPort(fieldName)) fieldName = "customInput_" + (++i);
             } else if (HasPort(fieldName)) {
-                Debug.LogWarning("Port '" + fieldName + "' already exists in " + name, this);
+                Debug.LogWarning("Port '" + fieldName + "' 已存在 " + name, this);
                 return ports[fieldName];
             }
-            NodePort port = new NodePort(fieldName, type, direction, connectionType, typeConstraint, this,false);
+            var port = new NodePort(fieldName, type, direction, connectionType, typeConstraint, this,false);
             ports.Add(fieldName, port);
             return port;
+        }
+
+        /// <summary> 传入一个范围扩展并挪动现有ports数据 </summary>
+        public bool InsertEmptyCustomOutput(Vector2Int rang,Type type, Node.ConnectionType connectionType = Node.ConnectionType.Multiple, Node.TypeConstraint typeConstraint = TypeConstraint.None, string fieldName = null)
+        {
+            if (ports==null||ports.Count < 1) return false;
+            var count = CustomOutputs.Count();
+            if (count == 0)
+            {
+                AddCustomPort(type, NodePort.IO.Output, connectionType, typeConstraint, fieldName+0);
+                return true;
+            }
+            var i = rang.x;
+            if (i > count) return false;
+            fieldName ??= "customInput_"; 
+            var end = rang.x + rang.y;
+            for (; i < end; i++)
+            {
+                var currentName = fieldName + i;
+                if (i > count - 1)
+                {
+                    AddCustomPort(type, NodePort.IO.Output, connectionType, typeConstraint, currentName);
+                    continue;
+                }
+                var targetName = fieldName + (i + rang.y);
+                ports[targetName] = AddCustomPort(type, NodePort.IO.Output, connectionType, typeConstraint, targetName);
+                ports[targetName].SwapConnections(ports[currentName]);
+            }
+            return true;
         }
         
         /// <summary> 移除一个自定义端口 </summary>
@@ -180,13 +217,44 @@ namespace XNode {
             port.ClearConnections();
             ports.Remove(port.fieldName);
         }
+        
+        /// <summary> 从node移除尾部自定义端口，但会丢失连线数据 </summary>
+        public void RemoveLastCustomPorts(int length)
+        {
+            var customPorts = new List<NodePort>(CustomOutputs);
+            for (var i = 0; i < length; i++)
+            {
+                RemoveCustomPort(customPorts[^1]);
+            }
+        }
+
+        /// <summary> 从node移除指定范围自定义端口保留其他连线数据 </summary>
+        public void RemoveRangCustomPorts(Vector2Int rang)
+        {
+            var customPorts = new List<NodePort>(CustomOutputs);
+            var customPortsCount = CustomPorts.Count();
+            var index = rang.x;
+            var length = rang.y;
+            var dataIndex = index + length;
+            for (var i = 0; i < length; i++)
+            {
+                index = rang.x + i;
+                if (dataIndex > customPortsCount - 1)
+                {
+                    RemoveCustomPort(customPorts[index]);
+                }
+                customPorts[index].SwapConnections(customPorts[dataIndex]);
+                RemoveCustomPort(customPorts[dataIndex]);
+                dataIndex += 1;
+            }
+        }
 
         /// <summary> 从node移除所有自定义端口 </summary>
         [ContextMenu("Clear Custom Ports")]
         public void ClearCustomPorts() {
-            List<NodePort> customPorts = new List<NodePort>(CustomOutputs);
-            foreach (NodePort port in customPorts) {
-                RemoveCustomPort(port);
+            var customPorts = new List<NodePort>(CustomOutputs);
+            foreach (var port in customPorts) {
+                RemoveDynamicPort(port);
             }
         }
 

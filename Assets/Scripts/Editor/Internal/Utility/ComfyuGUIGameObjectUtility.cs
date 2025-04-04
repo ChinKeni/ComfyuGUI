@@ -20,26 +20,48 @@ namespace ComfyuGUIEditor.Internal.Utility
             return result;
         }
 
-        public static void Open(List<GameObjectDepthDate> data, GameObjectDepthDate depthDate)
+        
+        /// <summary>
+        /// 打开 子对象深度节点数据
+        /// </summary>
+        /// <param name="data">数据源</param>
+        /// <param name="depthDate">需要进行操作的节点</param>
+        /// <returns>返回一个范围，x为index，y为length</returns>
+        public static Vector2Int Open(List<GameObjectDepthDate> data, GameObjectDepthDate depthDate)
         {
-            if(data == null||data.Count==0)return;
-            if(!data.Contains(depthDate))return;
-            var i = data.IndexOf(depthDate);
-            data.InsertRange(i + 1, GetChildren(depthDate));
+            var result = Vector2Int.zero;
+            if(data == null||data.Count==0)return result;
+            if(!data.Contains(depthDate))return result;
+            var i = data.IndexOf(depthDate) + 1;
+            var collection = GetChildren(depthDate);
+            result = new Vector2Int(i, collection.Count);
+            data.InsertRange(i,collection);
+            return result;
         }
 
-        public static void Close(List<GameObjectDepthDate> data, GameObjectDepthDate depthDate)
+        /// <summary>
+        /// 关闭/移除 子对象深度节点数据
+        /// </summary>
+        /// <param name="data">数据源</param>
+        /// <param name="depthDate">需要进行操作的节点</param>
+        /// <returns>返回的是一个范围，x为index，y为length</returns>
+        public static Vector2Int Close(List<GameObjectDepthDate> data, GameObjectDepthDate depthDate)
         {
-            if(data == null||data.Count==0)return;
-            if(!data.Contains(depthDate))return;
+            var result = Vector2Int.zero;
+            if(data == null||data.Count==0)return result;
+            if(!data.Contains(depthDate))return result;
             var gos = data.ToList();
             var i = data.IndexOf(depthDate)+1;
+            result.x = i;
             for (; i < gos.Count; i++)
             {
                 var d = gos[i];
-                if (d.Depth == depthDate.Depth) return;
+                if (d.Depth == depthDate.Depth) return result;
                 data.Remove(d);
+                result.y += 1;
             }
+            
+            return result;
         }
     }
 }

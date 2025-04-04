@@ -4,6 +4,7 @@ using ComfyuGUIEditor.Internal.Utility;
 using ComfyuGUIEditor.Nodes;
 using UnityEditor;
 using UnityEngine;
+using XNode;
 using XNodeEditor;
 
 namespace ComfyuGUIEditor.Widgets.Nodes
@@ -26,12 +27,19 @@ namespace ComfyuGUIEditor.Widgets.Nodes
                     isEnabled = gos[nextIndex].GameObject.transform.parent ==  go.transform;
                 var isSwitch = HierarchyItem(targetNode,go,depthDate.Depth,isEnabled,i);
                 if(!isSwitch)continue;
+                var rang = Vector2Int.zero;
                 //如果产生操作变化，需要取反判断内容
+                var isOpen = true;
                 if (!isEnabled)
-                    ComfyuGUIGameObjectUtility.Open(data,depthDate);
+                {
+                    rang = ComfyuGUIGameObjectUtility.Open(data,depthDate);
+                }
                 else
-                    ComfyuGUIGameObjectUtility.Close(data,depthDate);
-                UpdatePortData(targetNode,data);
+                {
+                    rang = ComfyuGUIGameObjectUtility.Close(data,depthDate);
+                    isOpen = false;
+                }
+                UpdatePortData(targetNode,data,rang,isOpen);
             }
             EditorGUILayout.EndVertical();
         }
@@ -39,23 +47,29 @@ namespace ComfyuGUIEditor.Widgets.Nodes
         public static void InitData(GetPrefabGameObjectListNode targetNode, List<GameObjectDepthDate> data)
         {
             targetNode.outputTargets = new List<GameObject>();
-            UpdatePortData(targetNode,data);
+            targetNode.ClearCustomPorts();
+            var rang = new Vector2Int(0,data.Count);
+            UpdatePortData(targetNode,data,rang);
         }
 
-        private static void UpdatePortData(GetPrefabGameObjectListNode targetNode, List<GameObjectDepthDate> data)
+        private static void UpdatePortData(GetPrefabGameObjectListNode targetNode, List<GameObjectDepthDate> data,
+            Vector2Int rang,bool isOpen = true)
         {
-            targetNode.ClearCustomPorts();
-
-            targetNode.outputTargets.Clear();
-            foreach (var cell in data)
+            //关闭节点更新数据
+            if (!isOpen)
             {
-                targetNode.outputTargets.Add(cell.GameObject);
+                targetNode.RemoveRangCustomPorts(rang);
+                targetNode.ClearOutputTargets(rang);
+                return;
             }
 
-            for (var i = 0; i < targetNode.outputTargets.Count; i++)
+            const string fieldName = "outputTargets ";
+            var end = rang.x + rang.y;
+            for (var i = rang.x; i < end; i++)
             {
-                targetNode.AddCustomOutput(typeof(GameObject), fieldName:"outputTargets " + i);
+                targetNode.outputTargets.Insert(i,data[i].GameObject);
             }
+            targetNode.InsertEmptyCustomOutput(rang,typeof(GameObject), fieldName:fieldName,connectionType: Node.ConnectionType.Override);
         }
 
 

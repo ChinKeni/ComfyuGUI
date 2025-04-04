@@ -28,7 +28,7 @@ namespace ComfyuGUIEditor.Nodes
                 selectedTargets?.Clear();
                 selectedTargets = null;
                 _currentPrefab = null;
-                ClearDynamicPorts();
+                ClearCustomPorts();
                 return;
             }
             if(currentPrefab==newPrefab)return;
@@ -50,6 +50,16 @@ namespace ComfyuGUIEditor.Nodes
         private void Reset()
         {
             name = "获取Prefab对象列表";
+        }
+
+        public void ClearOutputTargets(Vector2Int rang)
+        {
+            var gos = new List<GameObject>(outputTargets);
+            var end = rang.x + rang.y;
+            for (var i = rang.x; i < end; i++)
+            {
+                outputTargets.Remove(gos[i]);
+            }
         }
     }
     # region NodeData
@@ -78,12 +88,14 @@ namespace ComfyuGUIEditor.Nodes
         {
             base.OnBodyGUI();
             if(targetNode == null)targetNode = target as GetPrefabGameObjectListNode;
-            if(targetNode == null || targetNode.currentPrefab==null)return;
+            if (targetNode == null) return;
             if (lastPrefab != targetNode.currentPrefab)
             {
-                lastPrefab= targetNode.currentPrefab;
+                lastPrefab = targetNode.currentPrefab;
+                if(lastPrefab == null)return;
                 GameObjectTreeView.InitData(targetNode,targetNode.selectedTargets);
             }
+            
             GameObjectTreeView.Draw(targetNode,targetNode.selectedTargets);
         }
     }
