@@ -10,11 +10,11 @@ using XNodeEditor;
 namespace ComfyuGUIEditor.Nodes
 {
     [CreateNodeMenu("核心/Prefab/获取Prefab对象列表")]
-    [NodeTint("#335955")]
+    [NodeTint(ComfyuNodeGlobalVars.ColorNormal)]
     [NodeWidth(500)]
-    public class GetPrefabGameObjectListNode: ComfyuGUIBaseNode
+    public class GetPrefabGameObjectListNode: ComfyuGUIDoNode
     {
-        [Input] public GameObject prefab;
+        [Input(connectionType = ConnectionType.Override)] public GameObject prefab;
         [HideInInspector]public List<GameObjectDepthDate> selectedTargets;
         [HideInInspector]public List<GameObject> outputTargets;
         private GameObject _currentPrefab;

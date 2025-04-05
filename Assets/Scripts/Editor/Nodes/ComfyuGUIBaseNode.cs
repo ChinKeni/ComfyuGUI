@@ -1,4 +1,5 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 using XNode;
 
@@ -19,6 +20,7 @@ namespace ComfyuGUIEditor.Nodes
 
         public override void OnCreateConnection(NodePort from, NodePort to) {
             OnInputChanged();
+            OnValidate();
         }
 
         public override void OnRemoveConnection(NodePort port)
@@ -55,9 +57,9 @@ namespace ComfyuGUIEditor.Nodes
         private void SendSignal(NodePort output) {
             if(output == null)return;
             // Loop through port connections
-            int connectionCount = output.ConnectionCount;
-            for (int i = 0; i < connectionCount; i++) {
-                NodePort connectedPort = output.GetConnection(i);
+            var connectionCount = output.ConnectionCount;
+            for (var i = 0; i < connectionCount; i++) {
+                var connectedPort = output.GetConnection(i);
 
                 // Get connected ports logic node
                 var connectedNode = connectedPort.node as ComfyuGUIBaseNode;

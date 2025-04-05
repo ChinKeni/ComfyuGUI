@@ -207,7 +207,7 @@ namespace XNode {
         public void RemoveCustomPort(string fieldName) {
             NodePort customPort = GetPort(fieldName);
             if (customPort == null) throw new ArgumentException("端口 " + fieldName + " 不存在");
-            RemoveDynamicPort(GetPort(fieldName));
+            RemoveCustomPort(GetPort(fieldName));
         }
 
         /// <summary> 从node移除一个自定义端口 </summary>
@@ -254,7 +254,7 @@ namespace XNode {
         public void ClearCustomPorts() {
             var customPorts = new List<NodePort>(CustomOutputs);
             foreach (var port in customPorts) {
-                RemoveDynamicPort(port);
+                RemoveCustomPort(port);
             }
         }
 

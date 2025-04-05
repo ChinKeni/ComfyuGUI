@@ -4,9 +4,9 @@ using XNode;
 namespace ComfyuGUIEditor.Nodes
 {
     [CreateNodeMenu("核心/GameObject/设置GameObject显隐")]
-    [NodeTint("#335955")]
+    [NodeTint(ComfyuNodeGlobalVars.ColorNormal)]
     [NodeWidth(200)]
-    public class SetGameObjectActive: ComfyuGUIDoNode
+    public class SetGameObjectActiveNode: ComfyuGUIDoNode
     {
         [Input] public GameObject gameObject;
         public bool active;
@@ -26,9 +26,10 @@ namespace ComfyuGUIEditor.Nodes
             name = "设置GameObject显隐";
         }
 
-        public override void Do()
+        protected override void Do()
         {
             _gameObject.SetActive(active);
+            base.Do();
         }
     }
 }

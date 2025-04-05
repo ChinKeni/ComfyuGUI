@@ -6,9 +6,9 @@ using XNode;
 namespace ComfyuGUIEditor.Nodes
 {
     [CreateNodeMenu("核心/Prefab/获取Prefab资产")]
-    [NodeTint("#594d33")]
+    [NodeTint(ComfyuNodeGlobalVars.ColorEntry)]
     [NodeWidth(300)]
-    public class GetPrefabAssetNode: ComfyuGUIBaseNode
+    public class GetPrefabAssetNode: ComfyuGUIDoNode
     {
         public GameObject prefabAsset;
         [Output] public GameObject prefab;
