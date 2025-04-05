@@ -23,9 +23,9 @@ namespace ComfyuGUIEditor.Widgets.Nodes
                 var go = depthDate.GameObject;
                 var nextIndex = i+1;
                 var isEnabled = false;
-                if(nextIndex<gos.Count)
+                if(nextIndex<gos.Count && gos[nextIndex]!=null && gos[nextIndex].GameObject!=null && go.gameObject!=null)
                     isEnabled = gos[nextIndex].GameObject.transform.parent ==  go.transform;
-                var isSwitch = HierarchyItem(targetNode,go,depthDate.Depth,isEnabled,i);
+                var isSwitch = HierarchyItem(targetNode,go,depthDate.Depth,isEnabled,i,depthDate.GameObjectName);
                 if(!isSwitch)continue;
                 var rang = Vector2Int.zero;
                 //如果产生操作变化，需要取反判断内容
@@ -74,21 +74,31 @@ namespace ComfyuGUIEditor.Widgets.Nodes
 
 
         private static bool HierarchyItem(GetPrefabGameObjectListNode targetNode, GameObject go, int depth,
-            bool enabled, int i)
+            bool enabled, int i,string name="")
         {
-            if(go==null)return false;
+            
             var tmpSwitch = false;
             EditorGUILayout.BeginHorizontal();
             if(depth!=0)
                 EditorGUILayout.LabelField("", GUILayout.Width(6f*depth));
-            if(go.transform.childCount>0)
-                tmpSwitch = EditorGUILayout.Foldout(enabled,go.name);
+            if (go == null)
+            {
+                
+                EditorGUILayout.LabelField("", GUILayout.Width(10f));
+                EditorGUILayout.LabelField(name+" (Missing)",
+                    new GUIStyle(EditorStyles.label){normal = {textColor = Color.yellow}});
+            }
             else
             {
-                EditorGUILayout.LabelField("", GUILayout.Width(10f));
-                EditorGUILayout.LabelField(go.name);
+                if(go.transform.childCount>0)
+                    tmpSwitch = EditorGUILayout.Foldout(enabled,go.name);
+                else
+                {
+                    EditorGUILayout.LabelField("", GUILayout.Width(10f));
+                    EditorGUILayout.LabelField(go.name);
+                }
             }
-
+            
             var rect = GUILayoutUtility.GetLastRect();
             var pos = new Vector2(480, rect.y);
             var port = targetNode.GetPort("outputTargets " + i);

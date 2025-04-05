@@ -67,12 +67,15 @@ namespace ComfyuGUIEditor.Nodes
     {
         public GameObject GameObject;
         public int Depth;
+        public string GameObjectName;
         
         public GameObjectDepthDate(GameObject go, int depth)
         {
             GameObject = go;
             Depth = depth;
+            GameObjectName = go.name;
         }
+
     }
     #endregion NodeData
 
