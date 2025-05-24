@@ -13,7 +13,10 @@ namespace ComfyuGUIEditor.Nodes.Branch
     {
         public GameObject comparePrefab;
         [Input(connectionType = ConnectionType.Override)] public GameObject inData;
-        [Output] public GameObject result;
+        
+        //根据结果进行传递，并且离线模式True是获取comparePrefab的值，运行模式的时候，替换成源数据
+        [Output] public GameObject resultTrue;
+        [Output] public GameObject resultFalse;
         
         private GameObject currentData;
         private GameObject Result =>  ComfyuGUIPrefabUtility.ComparePrefab(currentData,comparePrefab) ? currentData : null;
@@ -26,7 +29,15 @@ namespace ComfyuGUIEditor.Nodes.Branch
         
         public override object GetValue(NodePort port)
         {
-            return Result;
+            if (port.fieldName == "resultTrue")
+            {
+                //默认返回比较对象，实际上在运行模式传递过去的是选中对象（因为要提取数据）
+                return comparePrefab;
+            }else if (port.fieldName == "resultFalse")
+            {
+                return currentData;
+            }
+            return null;
         }
         
         private void Reset()
